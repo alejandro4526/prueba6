@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Grafana y Control de LED</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            flex-direction: column; /* Permite tener el botón debajo del iframe */
+        }
+        iframe {
+            border: none;
+            width: 95%;
+            height: 80vh;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Incrusta aquí tu Dashboard de Grafana -->
+    <iframe 
+        src="http://localhost:3000/public-dashboards/9936d1d3430b412dbac18d764c4f63cd?theme=light"
+        title="Dashboard de Grafana">
+    </iframe>
+
+    <!-- Botón para controlar el LED -->
+    <button id="ledButton">Prender LED</button>
+
+    <!-- Agrega el script MQTT.js -->
+    <script src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
+    
+    <script>
+        // Conectar con el broker MQTT (cambia la URL por la de tu broker)
+        const client = mqtt.connect('wss://n1781645.ala.us-east-1.emqxsl.com:8084/mqtt'); // Usa WebSocket (wss://)
+
+        // Asegúrate de que la conexión se haya establecido
+        client.on('connect', function () {
+            console.log('Conectado al broker MQTT');
+        });
+
+        // Función para enviar un mensaje MQTT cuando el botón sea presionado
+        document.getElementById('ledButton').addEventListener('click', function() {
+            // Publicar un mensaje en el tema 'test/led1' con el valor 'ON'
+            client.publish('test/led1', 'ON', function() {
+                console.log('LED encendido');
+            });
+        });
+    </script>
+</body>
+</html>
